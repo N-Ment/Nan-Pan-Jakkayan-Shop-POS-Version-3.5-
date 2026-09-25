@@ -5,10 +5,18 @@ const App = {
   isAdmin: () => (Api.getUser() || {}).role === 'admin',
   async refresh() {
     const d = await Api.call('bootstrap');
-    Object.assign(App.state, d);
+    if (!d || typeof d !== 'object') throw new Error('Apps Script ส่งข้อมูลเริ่มต้นไม่ครบ กรุณาลองใหม่อีกครั้ง');
+    // ป้องกันหน้าจอพังเป็น error JavaScript เมื่อ API ตอบข้อมูลไม่ครบชั่วคราว
+    Object.assign(App.state, {
+      settings: d.settings && typeof d.settings === 'object' ? d.settings : {},
+      products: Array.isArray(d.products) ? d.products : [],
+      customers: Array.isArray(d.customers) ? d.customers : [],
+      suppliers: Array.isArray(d.suppliers) ? d.suppliers : [],
+      shift: d.shift || null
+    });
     const nm = document.getElementById('shop-name');
-    if (nm && d.settings.shop_name) nm.firstChild.nodeValue = d.settings.shop_name;
-    return d;
+    if (nm && App.state.settings.shop_name) nm.firstChild.nodeValue = App.state.settings.shop_name;
+    return App.state;
   }
 };
 

@@ -6,7 +6,6 @@ async function renderReports(el) {
     <div class="row" style="max-width:520px;align-items:center">
       <input type="date" id="r-from" value="${t}" aria-label="ตั้งแต่"><input type="date" id="r-to" value="${t}" aria-label="ถึง">
       <select id="r-pre" style="flex:0 0 130px"><option value="">ช่วงเวลา</option><option value="d">วันนี้</option><option value="m">เดือนนี้</option><option value="pm">เดือนที่แล้ว</option></select>
-      <button class="ghost" id="r-export" type="button">ดาวน์โหลด CSV</button>
     </div></div>
   ${App.isAdmin() ? '<section class="panel"><div class="row"><div style="flex:1"><label for="doc-q">ค้นหาเลขที่เอกสาร</label><input id="doc-q" placeholder="เช่น INV, PU, RC, PV, CN, SCN, EXP, ADJ, WD" autocomplete="off"></div><button id="doc-search" style="align-self:end">ค้นหา/ดูรายละเอียด</button></div></section>' : ''}
   <div id="r-sum"></div>
@@ -20,15 +19,6 @@ async function renderReports(el) {
   if (App.isAdmin()) { const search=async()=>{const no=$('#doc-q').value.trim();if(!no){UI.toast('กรอกเลขที่เอกสาร',true);return;}try{previewDocument(await Api.call('findDocument',{docNo:no}));}catch(e){UI.toast(e.message,true);}}; $('#doc-search').onclick=search; $('#doc-q').onkeydown=e=>{if(e.key==='Enter')search();}; }
   const load = () => { loadSummary(); loadSales(); };
   $('#r-from').onchange = $('#r-to').onchange = load;
-  $('#r-export').onclick = async () => {
-    try {
-      const out = await Api.call('salesExport', rng());
-      const url = URL.createObjectURL(new Blob([out.csv], { type: 'text/csv;charset=utf-8' }));
-      const a = document.createElement('a'); a.href = url; a.download = out.fileName; document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-      UI.toast('ดาวน์โหลด ' + out.fileName + ' แล้ว');
-    } catch (e) { UI.toast(e.message, true); }
-  };
   $('#r-pre').onchange = e => {
     const d = new Date(Date.now() + 7 * 3600000), y = d.getUTCFullYear(), m = d.getUTCMonth();
     const f = x => x.toISOString().slice(0, 10);

@@ -14,14 +14,13 @@ async function renderSettings(el) {
       ${chk('vat_registered', 'ร้านจดทะเบียน VAT')}${chk('price_includes_vat', 'ราคาขายรวม VAT แล้ว')}
       ${chk('allow_negative_stock', 'ยอมให้ขายเกินสต็อก')}${chk('save_receipt_pdf', 'เก็บใบเสร็จ PDF ลงโฟลเดอร์ Drive ทุกบิล')}
       <label>เพดานส่วนลดของแคชเชียร์ (%)</label><input id="s-max_discount_percent" class="num" inputmode="decimal" value="${UI.esc(s.max_discount_percent)}">
-      <label for="s-sell_button_color">สีปุ่มหน้าขาย</label><input id="s-sell_button_color" type="color" value="${UI.esc(/^#[0-9a-fA-F]{6}$/.test(s.sell_button_color || '') ? s.sell_button_color : '#0f6b4f')}">
       <div class="err" id="s-err"></div><button id="s-save" style="margin-top:8px">บันทึกการตั้งค่า</button>
     </section>
     <section class="panel"><div class="page-head"><h3 style="margin:0">พนักงาน</h3><button class="sm" id="u-new"><i class="ti ti-plus"></i> เพิ่มพนักงาน</button></div><div id="u-list"></div></section>
   </div>`;
   el.querySelector('#s-save').onclick = async () => {
     const p = {};
-    ['shop_name', 'address', 'phone', 'tax_id', 'receipt_footer', 'max_discount_percent', 'sell_button_color'].forEach(k => p[k] = el.querySelector('#s-' + k).value.trim());
+    ['shop_name', 'address', 'phone', 'tax_id', 'receipt_footer', 'max_discount_percent'].forEach(k => p[k] = el.querySelector('#s-' + k).value.trim());
     ['vat_registered', 'price_includes_vat', 'allow_negative_stock', 'save_receipt_pdf'].forEach(k => p[k] = el.querySelector('#s-' + k).checked ? 'TRUE' : 'FALSE');
     try { App.state.settings = await Api.call('saveSettings', p); UI.toast('บันทึกการตั้งค่าแล้ว'); renderShell('#/settings'); renderSettings(document.getElementById('page')); }
     catch (e) { el.querySelector('#s-err').textContent = e.message; }

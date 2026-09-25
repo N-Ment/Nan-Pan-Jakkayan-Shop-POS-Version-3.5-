@@ -14,9 +14,9 @@ async function renderPurchase(el) {
       </div>
       <button class="ghost sm" id="p-newsup" style="margin-top:6px">+ ผู้ขายใหม่</button>
       <label for="p-prod">เพิ่มสินค้า</label>
-      <div class="product-search">
-        <input id="p-prod" placeholder="พิมพ์ชื่อสินค้า / SKU / บาร์โค้ด" autocomplete="off" aria-label="ค้นหาสินค้าที่จะรับเข้า">
-        <div id="p-prod-results" class="product-search-results" aria-live="polite"></div>
+      <div class="row">
+        <select id="p-prod" style="flex:3 1 200px"><option value="">— เลือกสินค้า —</option>${App.state.products.map(p => `<option value="${UI.esc(p.sku)}">${UI.esc(p.name)} (คงเหลือ ${p.qty_on_hand})</option>`).join('')}</select>
+        <button class="ghost" id="p-add" style="flex:0 0 auto">เพิ่ม</button>
       </div>
       <div class="table-wrap" style="margin-top:10px"><table>
         <thead><tr><th>สินค้า</th><th class="r">จำนวน</th><th class="r">ทุน/หน่วย</th><th class="r">ส่วนลด</th><th class="r">รวม</th><th></th></tr></thead>
@@ -48,13 +48,12 @@ async function renderPurchase(el) {
   $('#p-sup').onchange = e => Pur.supId = e.target.value;
   $('#p-inv').oninput = e => Pur.supInvNo = e.target.value;
   $('#p-newsup').onclick = () => editSupplier(null, id => { Pur.supId = id; renderPurchase(el); });
-  $('#p-prod').oninput = drawPurProductResults;
-  $('#p-prod').onkeydown = e => {
-    if (e.key !== 'Enter') return;
-    e.preventDefault();
-    const matches = filteredPurProducts();
-    const exact = App.state.products.find(p => String(p.sku).toLowerCase() === $('#p-prod').value.trim().toLowerCase() || String(p.barcode) === $('#p-prod').value.trim());
-    if (exact || matches.length === 1) addPurProduct((exact || matches[0]).sku);
+  $('#p-add').onclick = () => {
+    const sku = $('#p-prod').value; if (!sku) return;
+    const p = App.state.products.find(x => x.sku === sku);
+    // ไม่รวมรายการ SKU เดียวกัน เพื่อให้ผู้ใช้ใส่ราคาทุนต่างกันเป็นคนละล็อตในบิลซื้อเดียวกันได้
+    Pur.lines.push({ sku, name: p.name, qty: 1, cost: '', disc: 0 });
+    drawPurLines();
   };
   $('#p-disc').oninput = e => { Pur.disc = e.target.value; drawPurTotal(); };
   $('#p-vat').oninput = e => { Pur.vat = e.target.value; drawPurTotal(); };
@@ -67,28 +66,7 @@ async function renderPurchase(el) {
   $('#p-save').onclick = savePurchase;
   if ($('#p-cancel')) $('#p-cancel').onclick = () => { Object.assign(Pur,{lines:[],supId:'',supInvNo:'',date:UI.today(),payType:'credit',method:'cash',disc:'',vat:'',note:'',slip:null,editNo:''}); renderPurchase(el); };
   $('#pl-from').onchange = $('#pl-to').onchange = loadPurList;
-  drawPurLines(); drawPurPay(); drawPurProductResults(); loadPurList();
-}
-
-function filteredPurProducts() {
-  const q = (document.getElementById('p-prod')?.value || '').trim().toLowerCase();
-  if (!q) return [];
-  return App.state.products.filter(p => String(p.name).toLowerCase().includes(q) || String(p.sku).toLowerCase().includes(q) || String(p.barcode || '').includes(q)).slice(0, 12);
-}
-
-function drawPurProductResults() {
-  const box = document.getElementById('p-prod-results'); if (!box) return;
-  const rows = filteredPurProducts();
-  box.innerHTML = rows.length ? rows.map(p => `<button class="ghost product-search-item" type="button" data-p-sku="${UI.esc(p.sku)}"><b>${UI.esc(p.name)}</b><span>${UI.esc(p.sku)} · คงเหลือ ${p.qty_on_hand} ${UI.esc(p.unit)}</span></button>`).join('') : '';
-  box.querySelectorAll('[data-p-sku]').forEach(b => b.onclick = () => addPurProduct(b.dataset.pSku));
-}
-
-function addPurProduct(sku) {
-  const p = App.state.products.find(x => x.sku === sku); if (!p) return;
-  // ไม่รวมรายการ SKU เดียวกัน เพื่อให้ผู้ใช้ใส่ราคาทุนต่างกันเป็นคนละล็อตในบิลซื้อเดียวกันได้
-  Pur.lines.push({ sku: p.sku, name: p.name, qty: 1, cost: '', disc: 0 });
-  const input = document.getElementById('p-prod'); if (input) { input.value = ''; input.focus(); }
-  drawPurProductResults(); drawPurLines();
+  drawPurLines(); drawPurPay(); loadPurList();
 }
 
 function purTotals() {

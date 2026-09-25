@@ -31,10 +31,9 @@ function sellTotals() {
 
 async function renderSell(el) {
   const shift = App.state.shift;
-  const sellColor = /^#[0-9a-fA-F]{6}$/.test(App.state.settings.sell_button_color || '') ? App.state.settings.sell_button_color : '#0f6b4f';
   el.innerHTML = `
   ${!shift ? `<div class="notice warn">ยังไม่ได้เปิดกะ — ขายเงินสดไม่ได้จนกว่าจะเปิดกะ <a href="#/cash">เปิดกะ</a></div>` : ''}
-  <div class="sell" style="--sell-button:${UI.esc(sellColor)}">
+  <div class="sell">
     <section class="panel">
       <div class="search"><i class="ti ti-search" aria-hidden="true"></i>
         <input id="q" placeholder="ค้นหาชื่อ / รหัส / สแกนบาร์โค้ดแล้วกด Enter" autocomplete="off" aria-label="ค้นหาสินค้า"></div>
@@ -58,7 +57,7 @@ async function renderSell(el) {
       <button class="ghost block sm" id="clear-btn" style="margin-top:6px">ล้างบิล</button>
     </section>
   </div>
-  <div class="mbar" style="--sell-button:${UI.esc(sellColor)}"><span>ยอดชำระ <b class="num" id="mgrand">0.00</b></span><button onclick="document.getElementById('cart-panel').scrollIntoView({behavior:'smooth'})">ไปชำระเงิน</button></div>`;
+  <div class="mbar"><span>ยอดชำระ <b class="num" id="mgrand">0.00</b></span><button onclick="document.getElementById('cart-panel').scrollIntoView({behavior:'smooth'})">ไปชำระเงิน</button></div>`;
 
   const q = el.querySelector('#q');
   q.oninput = drawTiles;

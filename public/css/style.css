@@ -81,11 +81,6 @@ a { color: var(--green); }
 .row > * { flex: 1 1 160px; }
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 @media (max-width: 860px) { .grid-2 { grid-template-columns: 1fr; } }
-.product-search { position: relative; }
-.product-search-results { display: grid; gap: 5px; margin-top: 6px; }
-.product-search-item { width: 100%; justify-content:space-between; background: #fff; color: var(--text); border-color: var(--line); text-align: left; font-weight: 400; }
-.product-search-item b { font-weight: 600; }
-.product-search-item span { color: var(--muted); font-size: 13px; }
 
 label { display: block; font-size: 13px; color: var(--muted); margin: 10px 0 4px; }
 input, select, textarea {
@@ -138,8 +133,7 @@ td { border-bottom: 1px solid #edf0ec; padding: 8px 6px; vertical-align: middle;
   text-align: left; background: #fff; color: var(--text); border: 1px solid var(--line); border-radius: 6px;
   padding: 10px; display: block; font-weight: 400;
 }
-.sell .tile:hover { background: color-mix(in srgb, var(--sell-button, var(--green)) 12%, #fff); border-color: var(--sell-button, var(--green)); }
-.sell .tile .p { color: var(--sell-button, var(--green-2)); }
+.tile:hover { background: var(--green-soft); border-color: #9fd0b9; }
 .tile .n { font-weight: 600; display: block; line-height: 1.3; min-height: 2.6em; }
 .tile .p { display: block; font-size: 17px; font-weight: 600; color: var(--green-2); }
 .tile .q { display: block; font-size: 12px; color: var(--muted); }
@@ -162,9 +156,6 @@ td { border-bottom: 1px solid #edf0ec; padding: 8px 6px; vertical-align: middle;
 .paytabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 8px; }
 .paytabs button { background: #fff; color: var(--text); border: 1px solid var(--line); font-weight: 500; }
 .paytabs button.on { background: var(--green); border-color: var(--green); color: #fff; }
-.sell .paytabs button.on { background: var(--sell-button, var(--green)); border-color: var(--sell-button, var(--green)); }
-.sell #pay-btn, .mbar button { background: var(--sell-button, var(--green)); }
-.sell #pay-btn:hover, .mbar button:hover { filter: brightness(.88); }
 .quick { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
 .quick button { padding: 4px 10px; font-size: 13px; background: #fff; color: var(--text); border: 1px solid var(--line); font-weight: 500; }
 .slip-prev img { max-width: 120px; border-radius: 6px; margin-top: 6px; border: 1px solid var(--line); }
